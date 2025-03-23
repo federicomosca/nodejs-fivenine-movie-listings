@@ -1,16 +1,30 @@
-const express = require('express')
-const User = require('../models/user.model')
-const { getUsers, getUser, createUser, updateUser, deleteUser, register, login } = require('../controllers/user.controller')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const {
+  register,
+  login,
+  profile,
+  getUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser
+} = require('../controllers/user.controller');
 
-router.post('/register', register)
-router.post('/login', login)
+const auth = require('../middleware/auth.middleware');
 
-router.get('/', getUsers)
-router.get('/:id', getUser)
+// Rotte pubbliche
+router.post('/register', register);
+router.post('/login', login);
 
-router.post('/', createUser)
-router.put('/:id', updateUser)
-router.delete('/:id', deleteUser)
+// Rotta protetta
+router.get('/profile', auth, profile);
 
-module.exports = router
+// Altre rotte (admin/dev)
+router.get('/', getUsers);
+router.get('/:id', getUser);
+router.post('/', createUser);
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
+
+module.exports = router;

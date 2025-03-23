@@ -1,4 +1,23 @@
 const Movie = require('../models/movie.model')
+const tmdb = require('../services/tmdb.service');
+
+const searchMovies = async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ message: 'Query mancante' });
+  }
+
+  try {
+    const response = await tmdb.get('/search/movie', {
+      params: { query }
+    });
+
+    res.json(response.data.results);
+  } catch (err) {
+    res.status(500).json({ message: 'Errore durante la ricerca', error: err.message });
+  }
+};
 
 const getMovies = async (req, res) => {
     try {
@@ -66,6 +85,7 @@ module.exports = {
     getMovie,
     createMovie,
     updateMovie,
-    deleteMovie
+    deleteMovie,
+    searchMovies
 }
 
