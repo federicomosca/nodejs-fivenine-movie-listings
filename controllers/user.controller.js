@@ -30,21 +30,34 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     const { email, password } = req.body;
+  
     try {
-        const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ message: 'Email non trovata' });
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ message: 'Password errata' });
-
-        const payload = { userId: user._id };
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.json({ token });
+      console.log("Tentativo di login con email:", email);
+  
+      const user = await User.findOne({ email });
+      if (!user) {
+        console.log("Utente non trovato");
+        return res.status(401).json({ message: "Email non trovata" });
+      }
+  
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        console.log("Password errata");
+        return res.status(401).json({ message: "Password errata" });
+      }
+  
+      const payload = { userId: user._id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  
+      console.log("Login riuscito, token generato");
+  
+      res.json({ token });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+      console.error("Errore nel login:", err);
+      res.status(500).json({ message: err.message });
     }
-};
+  };
+  
 
 const getUsers = async (req, res) => {
     try {
